@@ -59,6 +59,10 @@ export default function App() {
     addToast('U krijua një hartë e re 5×5.', 'info'); const id = setTimeout(() => setShuffling(false), 520); timersRef.current.push(id);
   };
 
+  const updateCellValue = useCallback((row, col, value) => {
+    setGrid((current) => current.map((gridRow, r) => r === row ? gridRow.map((cell, c) => c === col ? value : cell) : gridRow));
+  }, []);
+
   useEffect(() => () => clearTimers(), [clearTimers]);
   useEffect(() => {
     const onKeyDown = (event) => { if ((event.metaKey || event.ctrlKey) && event.key === 'Enter' && !loading && !animating) { event.preventDefault(); handleSolve(); } };
@@ -70,7 +74,7 @@ export default function App() {
     <header className="app-header"><a className="wordmark" href="#swim-field" aria-label="Swim in Rising Water"><span className="wordmark-mark"><IconWave size={18} /></span><span>SWIM <i>IN</i> RISING WATER</span></a><div className="header-telemetry"><span>ALG-778</span><i /><span>MIN-HEAP</span></div></header>
     <main className="app-main"><div className="main-content" id="swim-field">
       <Controls loading={loading} animating={animating} maxTime={maxTime} error={error} progress={progress} onGenerate={generateRandomGrid} onSolve={handleSolve} onReset={resetVisualization} />
-      <Grid grid={grid} cellStates={cellStates} pathCells={pathCells} animating={animating} waterLevel={waterLevel} shuffling={shuffling} />
+      <Grid grid={grid} cellStates={cellStates} pathCells={pathCells} animating={animating} waterLevel={waterLevel} shuffling={shuffling} onCellChange={updateCellValue} editingDisabled={loading || animating} />
     </div></main>
     <footer className="app-footer"><span>DIJKSTRA / MIN-HEAP</span><span>REACT + FASTAPI</span></footer><ToastContainer toasts={toasts} onDismiss={dismissToast} />
   </div>;
