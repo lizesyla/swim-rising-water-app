@@ -1,4 +1,7 @@
-const API_URL = 'http://127.0.0.1:8000/api';
+// Vite exposes only variables that start with VITE_.  Locally, this falls
+// back to FastAPI's default address; on Vercel set VITE_API_URL to the
+// public Render URL, followed by /api.
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
 
 export const solveSwimProblem = async (grid) => {
   try {
