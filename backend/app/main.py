@@ -7,19 +7,27 @@ from app.solver import solve_swim_in_water
 
 app = FastAPI(title="Swim in Rising Water API")
 
-allowed_origins = [
-    origin.strip()
-    for origin in os.getenv("ALLOWED_ORIGINS", "http://localhost:5173").split(",")
-    if origin.strip()
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
-    allow_credentials=False,
+    allow_origins=["*"],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# allowed_origins = [
+#     origin.strip()
+#     for origin in os.getenv("ALLOWED_ORIGINS", "http://localhost:5173").split(",")
+#     if origin.strip()
+# ]
+
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=allowed_origins,
+#     allow_credentials=False,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
 
 class GridModel(BaseModel):
     grid: List[List[int]]
