@@ -8,7 +8,7 @@ const LEGEND_ITEMS = [
   ['legend-swatch--visited', 'Rrugë e përshkuar'],
 ];
 
-export default function Controls({ loading, animating, maxTime, error, progress, onGenerate, onSolve, onReset }) {
+export default function Controls({ loading, animating, maxTime, error, progress, gridSize, minGridSize, maxGridSize, onGridSizeChange, onGenerate, onSolve, onReset }) {
   const [showLegend, setShowLegend] = useState(false);
   const isActive = loading || animating;
   const status = loading ? 'Duke lexuar rrymën' : animating ? 'Not në progres' : maxTime !== null ? 'Rrugë e gjetur' : 'Gati për zhytje';
@@ -35,6 +35,13 @@ export default function Controls({ loading, animating, maxTime, error, progress,
       )}
 
       {error && <p className="expedition-error" role="alert">{error}</p>}
+
+      <label className="matrix-size-control">
+        <span>MADHËSIA E MATRICES</span>
+        <select value={gridSize} onChange={(event) => onGridSizeChange(Number(event.target.value))} disabled={isActive} aria-label="Madhësia e matricës">
+          {Array.from({ length: maxGridSize - minGridSize + 1 }, (_, index) => minGridSize + index).map((size) => <option key={size} value={size}>{size} × {size}</option>)}
+        </select>
+      </label>
 
       <div className="expedition-actions">
         <button className="launch-button" onClick={onSolve} disabled={isActive} aria-label="Nis simulimin">

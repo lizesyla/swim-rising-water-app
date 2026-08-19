@@ -6,9 +6,17 @@ import { IconWave } from './components/Icons';
 import { solveSwimProblem } from './utils/api';
 
 const INITIAL_GRID = [[0, 1, 2, 3, 4], [24, 23, 22, 21, 5], [12, 13, 14, 15, 16], [11, 17, 18, 19, 20], [10, 9, 8, 7, 6]];
+const MIN_GRID_SIZE = 2;
+const MAX_GRID_SIZE = 10;
+
+const createRandomGrid = (size) => {
+  const values = Array.from({ length: size * size }, (_, index) => index).sort(() => Math.random() - 0.5);
+  return Array.from({ length: size }, () => values.splice(0, size));
+};
 
 export default function App() {
   const [grid, setGrid] = useState(INITIAL_GRID);
+  const [gridSize, setGridSize] = useState(INITIAL_GRID.length);
   const [cellStates, setCellStates] = useState({});
   const [pathCells, setPathCells] = useState({});
   const [maxTime, setMaxTime] = useState(null);
@@ -54,9 +62,15 @@ export default function App() {
 
   const generateRandomGrid = () => {
     resetVisualization(); setShuffling(true);
-    const nums = Array.from({ length: 25 }, (_, i) => i).sort(() => Math.random() - 0.5);
-    const newGrid = []; while (nums.length) newGrid.push(nums.splice(0, 5)); setGrid(newGrid);
-    addToast('U krijua një hartë e re 5×5.', 'info'); const id = setTimeout(() => setShuffling(false), 520); timersRef.current.push(id);
+    setGrid(createRandomGrid(gridSize));
+    addToast(`U krijua një hartë e re ${gridSize}×${gridSize}.`, 'info'); const id = setTimeout(() => setShuffling(false), 520); timersRef.current.push(id);
+  };
+
+  const handleGridSizeChange = (size) => {
+    resetVisualization();
+    setGridSize(size);
+    setGrid(createRandomGrid(size));
+    addToast(`Matrica u ndryshua në ${size}×${size}.`, 'info');
   };
 
   const updateCellValue = useCallback((row, col, value) => {
@@ -73,8 +87,8 @@ export default function App() {
   return <div className="app-container">
     <header className="app-header"><a className="wordmark" href="#swim-field" aria-label="Swim in Rising Water"><span className="wordmark-mark"><IconWave size={18} /></span><span>SWIM <i>IN</i> RISING WATER</span></a><div className="header-telemetry"><span>ALG-778</span><i /><span>MIN-HEAP</span></div></header>
     <main className="app-main"><div className="main-content" id="swim-field">
-      <Controls loading={loading} animating={animating} maxTime={maxTime} error={error} progress={progress} onGenerate={generateRandomGrid} onSolve={handleSolve} onReset={resetVisualization} />
-      <Grid grid={grid} cellStates={cellStates} pathCells={pathCells} animating={animating} waterLevel={waterLevel} shuffling={shuffling} onCellChange={updateCellValue} editingDisabled={loading || animating} />
+      <Controls loading={loading} animating={animating} maxTime={maxTime} error={error} progress={progress} gridSize={gridSize} minGridSize={MIN_GRID_SIZE} maxGridSize={MAX_GRID_SIZE} onGridSizeChange={handleGridSizeChange} onGenerate={generateRandomGrid} onSolve={handleSolve} onReset={resetVisualization} />
+      <Grid key={gridSize} grid={grid} cellStates={cellStates} pathCells={pathCells} animating={animating} waterLevel={waterLevel} shuffling={shuffling} onCellChange={updateCellValue} editingDisabled={loading || animating} />
     </div></main>
     <footer className="app-footer"><span>DIJKSTRA / MIN-HEAP</span><span>REACT + FASTAPI</span></footer><ToastContainer toasts={toasts} onDismiss={dismissToast} />
   </div>;
